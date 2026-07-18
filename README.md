@@ -149,26 +149,27 @@ results/
 
 ## Discussion (most favourite part!)
 
-Here I have shared the summary results, top 9 models, in a table sorted by low to high false negatives!
-
-The important note here is this: these are vital classification models, logically false negatives are the worst to happen (patient has cancer, yet the model classifies as no cancer is present). So my endeavour was that to find those models with FNs as low as possible (ideally 0), yet as you may guess, this can not be ensured. 
+Here I have shared the summary results, top 9 models, in a table sorted by low to high false negatives.
 
 | model_name     | model_type    |   n_qubits |   q_depth |   fn |   fp |   tn |   tp |   training_time_sec |   accuracy |   precision |   recall_sensitivity |   specificity |   f1_score |   roc_auc |
 |:---------------|:--------------|-----------:|----------:|-----:|-----:|-----:|-----:|--------------------:|-----------:|------------:|---------------------:|--------------:|-----------:|----------:|
-| ResNet50V2     | hybrid        |         12 |         2 |    1 |    6 | 1044 |  928 |            11596.3  |   0.996463 |    0.993576 |             0.998924 |      0.994286 |   0.996243 |  0.996338 |
-| VGG16          | classical CNN |        nan |       nan |    2 |    4 | 1046 |  927 |            33731.1  |   0.996968 |    0.995704 |             0.997847 |      0.99619  |   0.996774 |  0.999958 |
-| DenseNet201    | classical CNN |        nan |       nan |    3 |    1 | 1049 |  926 |            21920.5  |   0.997979 |    0.998921 |             0.996771 |      0.999048 |   0.997845 |  0.999875 |
-| EfficientNetB0 | hybrid        |          4 |         2 |    3 |    4 | 1046 |  926 |            14118.9  |   0.996463 |    0.995699 |             0.996771 |      0.99619  |   0.996235 |  0.999721 |
+| ResNet50V2     | hybrid        |          2 |         2 |   47 |  747 |  463 |  750 |            10275.4  |   0.604385 |    0.501002 |             0.941029 |      0.382645 |   0.65388  |  0.786641 |
+| VGG19          | hybrid        |          2 |         2 |   52 |  874 |  336 |  745 |            29198    |   0.538615 |    0.460161 |             0.934755 |      0.277686 |   0.616722 |  0.779889 |
+| VGG19          | hybrid        |          8 |         2 |   71 |  771 |  439 |  726 |            41108.3  |   0.580468 |    0.48497  |             0.910916 |      0.36281  |   0.632956 |  0.751474 |
+| VGG19          | classical CNN |        nan |       nan |   72 |  739 |  471 |  725 |            38063    |   0.595914 |    0.495219 |             0.909661 |      0.389256 |   0.641309 |  0.784895 |
+| VGG16          | hybrid        |         12 |         2 |   86 |  650 |  560 |  711 |            25261.3  |   0.633284 |    0.52241  |             0.892095 |      0.46281  |   0.658943 |  0.773017 |
+| ResNet50V2     | hybrid        |         16 |         2 |   89 |  589 |  621 |  708 |            17084.9  |   0.662182 |    0.545875 |             0.888331 |      0.513223 |   0.676218 |  0.777859 |
 | MobileNetV2    | hybrid        |         12 |         2 |    3 |   14 | 1036 |  926 |            10818.8  |   0.99141  |    0.985106 |             0.996771 |      0.986667 |   0.990904 |  0.999552 |
-| VGG19          | classical CNN |        nan |       nan |    4 |    6 | 1044 |  925 |            41627.5  |   0.994947 |    0.993555 |             0.995694 |      0.994286 |   0.994624 |  0.999836 |
-| Xception       | hybrid        |          8 |         2 |    4 |    8 | 1042 |  925 |            36796.1  |   0.993936 |    0.991426 |             0.995694 |      0.992381 |   0.993555 |  0.999489 |
-| InceptionV3    | hybrid        |          4 |         2 |    5 |    9 | 1041 |  924 |             6186.18 |   0.992926 |    0.990354 |             0.994618 |      0.991429 |   0.992481 |  0.992033 |
-| DenseNet121    | hybrid        |          6 |         2 |    6 |    5 | 1045 |  923 |             8926.21 |   0.994442 |    0.994612 |             0.993541 |      0.995238 |   0.994076 |  0.997766 |
+| VGG16          | hybrid        |          2 |         2 |   91 |  691 |  519 |  706 |            32132.1  |   0.610364 |    0.505369 |             0.885822 |      0.428926 |   0.643573 |  0.724729 |           
+| VGG16          | hybrid        |          6 |         2 |   93 |  708 |  502 |  704 |            29428.8  |   0.600897 |    0.498584 |             0.883312 |      0.414876 |   0.637392 |  0.762377 |           
+| VGG19          | hybrid        |          4 |         2 |   94 |  611 |  599 |  703 |            41084.6  |   0.648729 |    0.535008 |             0.882058 |      0.495041 |   0.666035 |  0.7971   |
+| VGG19          | hybrid        |          6 |         2 |   95 |  613 |  597 |  702 |            41083.6  |   0.647235 |    0.53384  |             0.880803 |      0.493388 |   0.664773 |  0.80092  |
 
 
 ### Some important points about the table:
-* I compared each model with its hybrid variants, I chose the one which outperforms in terms of lower false negatives
-* Interestingly ResNet50V2 with only 2 qubits outperformed others significantly, the best classical model had 72 FNs (VGG19) and 739 FPs, the hybrid mentioned had 47 FNs and 747 FPs, so we gained around 35% improvement in terms of FNs and the penalty was only 1% increase in the number of FPs!
+* In top 9 models we have 8 hybrids and just 1 classical CNN
+* ResNet50V2 with 2 qubits and depth 2 shows a roughly 35% decrease in number of false negatives vs VGG19 which had the best performance among classical CNNs
+* The above two points shows clearly that performance increases significantly by adding a quantum layer to our classical CNNs
 * I have provided the full tables with all the variants in TABLES.md, you find it in the main page of repository
 
 ## Key Contributions

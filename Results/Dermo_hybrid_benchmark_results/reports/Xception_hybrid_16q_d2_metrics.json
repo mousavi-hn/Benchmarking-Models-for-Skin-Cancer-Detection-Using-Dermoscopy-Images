@@ -1,0 +1,16 @@
+{
+    "accuracy": 0.7115097159940209,
+    "precision": 0.6235827664399093,
+    "recall_sensitivity": 0.6900878293601004,
+    "specificity": 0.7256198347107438,
+    "f1_score": 0.6551518761167362,
+    "roc_auc": 0.7796167446104713,
+    "tp": 550,
+    "tn": 878,
+    "fp": 332,
+    "fn": 247,
+    "model_name": "Xception",
+    "n_qubits": 16,
+    "q_depth": 2,
+    "training_time_sec": 39602.7039372921
+}

@@ -6,8 +6,8 @@ import pandas as pd
 from src.configs import VALID_EXTENSIONS
 
 # PATHS AND SETTINGS
-DATASET_DIR = "../data/MRI"
-OUTPUT_DIR = "../results/MRI_cnn_benchmark_results"
+DATASET_DIR = "../data/Dermoscopy_Images"
+OUTPUT_DIR = "../results/Dermoscopy_cnn_benchmark_results"
 SPLIT_DIR = os.path.join(OUTPUT_DIR, "splits")
 MODEL_DIR = os.path.join(OUTPUT_DIR, "saved_models")
 PLOT_DIR = os.path.join(OUTPUT_DIR, "plots")

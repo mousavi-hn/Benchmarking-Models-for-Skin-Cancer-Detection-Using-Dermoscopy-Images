@@ -1,0 +1,16 @@
+{
+    "accuracy": 0.600896860986547,
+    "precision": 0.4985835694050991,
+    "recall_sensitivity": 0.8833124215809285,
+    "specificity": 0.41487603305785126,
+    "f1_score": 0.6373924852874604,
+    "roc_auc": 0.7623769922332714,
+    "tp": 704,
+    "tn": 502,
+    "fp": 708,
+    "fn": 93,
+    "model_name": "VGG16",
+    "n_qubits": 6,
+    "q_depth": 2,
+    "training_time_sec": 29428.802664995193
+}

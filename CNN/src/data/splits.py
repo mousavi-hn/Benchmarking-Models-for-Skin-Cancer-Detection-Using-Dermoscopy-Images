@@ -12,10 +12,6 @@ def make_splits():
     print("Total images:", len(full_df))
     print(full_df["class_name"].value_counts())
 
-    ixi_df = full_df[full_df["source"] == "IXI"].copy()
-    other_df = full_df[full_df["source"] != "IXI"].copy()
-
-    # Split non-IXI normally by label ( labels are no and yes, no says there is no cancer and yes the opposite )
     other_train, other_temp = train_test_split(
         other_df,
         test_size=0.30,
@@ -30,7 +26,6 @@ def make_splits():
         random_state=SEED
     )
 
-    # Split IXI by subject_id
     ixi_subjects = ixi_df[["subject_id"]].drop_duplicates()
 
     ixi_train_subjects, ixi_temp_subjects = train_test_split(
