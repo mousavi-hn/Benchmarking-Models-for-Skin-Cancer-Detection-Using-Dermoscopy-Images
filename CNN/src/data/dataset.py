@@ -1,3 +1,10 @@
+"""
+Collect image paths and binary class labels from a single-source image dataset.
+
+Images are discovered recursively under the ``no`` and ``yes`` class
+directories and represented as a pandas DataFrame for subsequent dataset
+splitting and model training.
+"""
 import os
 from pathlib import Path
 
@@ -6,6 +13,23 @@ import pandas as pd
 from src.configs import VALID_EXTENSIONS
 
 def collect_image_paths(dataset_dir):
+    """
+    Collect supported image files and assign binary class labels.
+
+    The function recursively scans the ``no`` and ``yes`` class directories.
+    Images in ``no`` receive label 0 and images in ``yes`` receive label 1.
+
+    Args:
+        dataset_dir: Root directory containing the class directories.
+
+    Returns:
+        pandas.DataFrame: One row per discovered image with filepath, label,
+        class name, and subject identifier fields.
+
+    Raises:
+        FileNotFoundError: If an expected class directory is missing.
+        ValueError: If no supported image files are found.
+    """
     records = []
 
     class_map = {

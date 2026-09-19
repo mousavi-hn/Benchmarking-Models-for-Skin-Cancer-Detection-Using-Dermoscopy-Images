@@ -1,13 +1,35 @@
-import os
+"""
+Collect image paths and binary class labels from a single-source image dataset.
 
+Images are discovered recursively under the ``no`` and ``yes`` class
+directories and represented as a pandas DataFrame for subsequent dataset
+splitting and model training.
+"""
+import os
 from pathlib import Path
+
 import pandas as pd
-from PIL import Image
-import numpy as np
 
 from src.configs import VALID_EXTENSIONS
 
 def collect_image_paths(dataset_dir):
+    """
+    Collect supported image files and assign binary class labels.
+
+    The function recursively scans the ``no`` and ``yes`` class directories.
+    Images in ``no`` receive label 0 and images in ``yes`` receive label 1.
+
+    Args:
+        dataset_dir: Root directory containing the class directories.
+
+    Returns:
+        pandas.DataFrame: One row per discovered image with filepath, label,
+        class name, and subject identifier fields.
+
+    Raises:
+        FileNotFoundError: If an expected class directory is missing.
+        ValueError: If no supported image files are found.
+    """
     records = []
 
     class_map = {
@@ -28,35 +50,11 @@ def collect_image_paths(dataset_dir):
                         "filepath": os.path.join(root, file),
                         "label": label,
                         "class_name": class_name,
-                        "source": "non_IXI",
                         "subject_id": None
                     })
-
-    ixi_dir = os.path.join(dataset_dir, "IXI_no")
-    if not os.path.exists(ixi_dir):
-        raise FileNotFoundError(f"Folder not found: {ixi_dir}")
-
-    for root, _, files in os.walk(ixi_dir):
-        for file in files:
-            ext = Path(file).suffix.lower()
-            if ext in VALID_EXTENSIONS:
-                subject_id = Path(root).name
-                records.append({
-                    "filepath": os.path.join(root, file),
-                    "label": 0,
-                    "class_name": "no",
-                    "source": "IXI",
-                    "subject_id": subject_id
-                })
 
     full_df = pd.DataFrame(records)
     if full_df.empty:
         raise ValueError("No images found. Check dataset path and file extensions.")
 
     return full_df
-
-def read_image(path, target_size):
-    img = Image.open(path).convert("RGB")
-    img = img.resize(target_size)
-    arr = np.asarray(img, dtype=np.float32)
-    return arr

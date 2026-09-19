@@ -1,3 +1,10 @@
+"""
+Create reproducible training, validation, and test splits for an image dataset.
+
+The collected images are divided using stratified sampling so that the binary
+class distribution is preserved across the training, validation, and test
+partitions.
+"""
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -11,6 +18,18 @@ from src.configs import (
 )
 
 def make_splits():
+    """
+    Create stratified training, validation, and test partitions.
+
+    The full dataset is first split into 70% training data and 30% temporary
+    data. The temporary partition is then divided equally between validation
+    and test data, yielding an overall 70/15/15 split while preserving the
+    binary class distribution.
+
+    Returns:
+        tuple[pandas.DataFrame, pandas.DataFrame, pandas.DataFrame]:
+            Training, validation, and test DataFrames, respectively.
+    """
     full_df = collect_image_paths(DATASET_DIR)
     print("Total images:", len(full_df))
     print(full_df["class_name"].value_counts())

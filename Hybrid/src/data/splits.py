@@ -1,57 +1,54 @@
+"""
+Create reproducible training, validation, and test splits for an image dataset.
+
+The collected images are divided using stratified sampling so that the binary
+class distribution is preserved across the training, validation, and test
+partitions.
+"""
 import os
-
-from sklearn.model_selection import train_test_split
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
-from src.configs import SEED
-from loader import SPLIT_DIR
+from dataset import collect_image_paths
 
-def make_splits(full_df):
-    ixi_df = full_df[full_df["source"] == "IXI"].copy()
-    other_df = full_df[full_df["source"] != "IXI"].copy()
+from src.configs import (
+    SEED,
+    DATASET_DIR,
+    SPLIT_DIR,
+)
 
-    other_train, other_temp = train_test_split(
-        other_df,
+def make_splits():
+    """
+    Create stratified training, validation, and test partitions.
+
+    The full dataset is first split into 70% training data and 30% temporary
+    data. The temporary partition is then divided equally between validation
+    and test data, yielding an overall 70/15/15 split while preserving the
+    binary class distribution.
+
+    Returns:
+        tuple[pandas.DataFrame, pandas.DataFrame, pandas.DataFrame]:
+            Training, validation, and test DataFrames, respectively.
+    """
+    full_df = collect_image_paths(DATASET_DIR)
+    print("Total images:", len(full_df))
+    print(full_df["class_name"].value_counts())
+
+    df = full_df.copy()
+
+    # Split non-IXI normally by label ( labels are no and yes, no says there is no cancer and yes the opposite )
+    train_df, temp_df = train_test_split(
+        df,
         test_size=0.30,
-        stratify=other_df["label"],
+        stratify=df["label"],
         random_state=SEED
     )
 
-    other_val, other_test = train_test_split(
-        other_temp,
+    val_df, test_df = train_test_split(
+        temp_df,
         test_size=0.50,
-        stratify=other_temp["label"],
+        stratify=temp_df["label"],
         random_state=SEED
     )
-
-    ixi_subjects = ixi_df[["subject_id"]].drop_duplicates()
-
-    ixi_train_subjects, ixi_temp_subjects = train_test_split(
-        ixi_subjects,
-        test_size=0.30,
-        random_state=SEED
-    )
-
-    ixi_val_subjects, ixi_test_subjects = train_test_split(
-        ixi_temp_subjects,
-        test_size=0.50,
-        random_state=SEED
-    )
-
-    ixi_train = ixi_df[ixi_df["subject_id"].isin(ixi_train_subjects["subject_id"])]
-    ixi_val = ixi_df[ixi_df["subject_id"].isin(ixi_val_subjects["subject_id"])]
-    ixi_test = ixi_df[ixi_df["subject_id"].isin(ixi_test_subjects["subject_id"])]
-
-    train_df = pd.concat([other_train, ixi_train], ignore_index=True)
-    val_df = pd.concat([other_val, ixi_val], ignore_index=True)
-    test_df = pd.concat([other_test, ixi_test], ignore_index=True)
-
-    train_df.to_csv(os.path.join(SPLIT_DIR, "train_split.csv"), index=False)
-    val_df.to_csv(os.path.join(SPLIT_DIR, "val_split.csv"), index=False)
-    test_df.to_csv(os.path.join(SPLIT_DIR, "test_split.csv"), index=False)
-
-    train_df = train_df.sample(frac=1, random_state=SEED).reset_index(drop=True)
-    val_df = val_df.sample(frac=1, random_state=SEED).reset_index(drop=True)
-    test_df = test_df.sample(frac=1, random_state=SEED).reset_index(drop=True)
 
     return train_df, val_df, test_df
