@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project presents a comprehensive benchmarking framework for Skin tumor detection using Dermo scan images. It evaluates multiple deep learning architectures — including classical convolutional neural networks (CNNs) and hybrid quantum-classical models — to analyze their performance, robustness, and scalability. I used the same data for training/validating/testing for all models, to keep it fair and compare the performance of the models only. So what I was looking for was an answer to this question: we have CNNs ready at our disposal, QNNs are a new trend, is it worth it to go for hybrid QNN-CNN ? Do they give us any advantages ?
+This project presents a comprehensive benchmarking framework for skin-lesion classification using dermoscopy images. It evaluates multiple deep learning architectures — including classical convolutional neural networks (CNNs) and hybrid quantum-classical models — to analyze their performance, robustness, and scalability. I used consistent dataset partitions for comparing the models, to keep it fair and compare the performance of the models only. So what I was looking for was an answer to this question: we have CNNs ready at our disposal, QNNs are a new trend, is it worth it to go for hybrid QNN-CNN ? Do they give us any advantages ?
 
 The goal of this project is to provide a reproducible and extensible pipeline for comparing state-of-the-art models in medical image classification.
 
@@ -58,8 +58,8 @@ Each model is evaluated using:
 ## Dataset
 
 * [Skin Cancer MNIST: HAM10000](https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000)
-* Binary classification: **tumor / no tumor**
-* I considered bcc and mel as cancer and the other types except akiec as no cancer
+* Binary classification: **melanoma or basal-cell carcinoma / selected other lesion categories**
+* The positive class includes **bcc** and **mel**; the negative class excludes **akiec** and follows the selected nonmalignant lesion categories in the prepared dataset
 * I also used augmentation methods on images (cropping, rotating, etc.) to level the number of those images with cancer and those without
 
 > ⚠️ Due to dataset licensing and privacy constraints, the data is not included in this repository.
@@ -95,7 +95,7 @@ data/Dermoscopy_Images/
 ### 4. Run training
 
 ```bash
-python scripts/train_hybrid.py
+python Hybrid/scripts/train_hybrid.py
 ```
 
 ---
@@ -106,7 +106,7 @@ python scripts/train_hybrid.py
 project/
 │
 ├── CNN/                 
-├── hybrid CNN + QNN/                    
+├── Hybrid/                    
 ├── results/             # Outputs (models, plots, reports)
 ```
 
@@ -139,38 +139,40 @@ Example output:
 
 ```
 results/
-├── saved_models/
-├── plots/
-├── reports/
-└── hybrid_benchmark_summary.csv
+├── Dermo_cnn_benchmark_results/
+└── Dermo_hybrid_benchmark_results/
+    ├── plots/
+    ├── reports/
+    └── hybrid_benchmark_summary.csv
 ```
 
 ---
 
 ## Discussion (most favourite part!)
 
-Here I have shared the summary results, top 9 models, in a table sorted by low to high false negatives.
+### Top 9 configurations ranked by false negatives
 
-| model_name     | model_type    |   n_qubits |   q_depth |   fn |   fp |   tn |   tp |   training_time_sec |   accuracy |   precision |   recall_sensitivity |   specificity |   f1_score |   roc_auc |
-|:---------------|:--------------|-----------:|----------:|-----:|-----:|-----:|-----:|--------------------:|-----------:|------------:|---------------------:|--------------:|-----------:|----------:|
-| ResNet50V2     | hybrid        |          2 |         2 |   47 |  747 |  463 |  750 |            10275.4  |   0.604385 |    0.501002 |             0.941029 |      0.382645 |   0.65388  |  0.786641 |
-| VGG19          | hybrid        |          2 |         2 |   52 |  874 |  336 |  745 |            29198    |   0.538615 |    0.460161 |             0.934755 |      0.277686 |   0.616722 |  0.779889 |
-| VGG19          | hybrid        |          8 |         2 |   71 |  771 |  439 |  726 |            41108.3  |   0.580468 |    0.48497  |             0.910916 |      0.36281  |   0.632956 |  0.751474 |
-| VGG19          | classical CNN |        nan |       nan |   72 |  739 |  471 |  725 |            38063    |   0.595914 |    0.495219 |             0.909661 |      0.389256 |   0.641309 |  0.784895 |
-| VGG16          | hybrid        |         12 |         2 |   86 |  650 |  560 |  711 |            25261.3  |   0.633284 |    0.52241  |             0.892095 |      0.46281  |   0.658943 |  0.773017 |
-| ResNet50V2     | hybrid        |         16 |         2 |   89 |  589 |  621 |  708 |            17084.9  |   0.662182 |    0.545875 |             0.888331 |      0.513223 |   0.676218 |  0.777859 |
-| MobileNetV2    | hybrid        |         12 |         2 |    3 |   14 | 1036 |  926 |            10818.8  |   0.99141  |    0.985106 |             0.996771 |      0.986667 |   0.990904 |  0.999552 |
-| VGG16          | hybrid        |          2 |         2 |   91 |  691 |  519 |  706 |            32132.1  |   0.610364 |    0.505369 |             0.885822 |      0.428926 |   0.643573 |  0.724729 |           
-| VGG16          | hybrid        |          6 |         2 |   93 |  708 |  502 |  704 |            29428.8  |   0.600897 |    0.498584 |             0.883312 |      0.414876 |   0.637392 |  0.762377 |           
-| VGG19          | hybrid        |          4 |         2 |   94 |  611 |  599 |  703 |            41084.6  |   0.648729 |    0.535008 |             0.882058 |      0.495041 |   0.666035 |  0.7971   |
-| VGG19          | hybrid        |          6 |         2 |   95 |  613 |  597 |  702 |            41083.6  |   0.647235 |    0.53384  |             0.880803 |      0.493388 |   0.664773 |  0.80092  |
+The ranking below combines **all 9 classical CNNs and all 54 hybrid configurations** reported in [TABLES.md](TABLES.md). Configurations are ordered by **ascending false negatives (FN)** on the reported test set, with **ascending false positives (FP)** as a tie-breaker. This is an FN-prioritized ranking, **not** a ranking by overall accuracy, balanced accuracy, or clinical utility.
 
+| Rank | Model | Type | Qubits | Depth | FN | FP | TP | TN | Sensitivity | Specificity | F1 | Balanced acc. | ROC-AUC |
+| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | ResNet50V2 | Hybrid | 2 | 2 | 47 | 747 | 750 | 463 | 94.10% | 38.26% | 65.39% | 66.18% | 78.66% |
+| 2 | VGG19 | Hybrid | 2 | 2 | 52 | 874 | 745 | 336 | 93.48% | 27.77% | 61.67% | 60.62% | 77.99% |
+| 3 | VGG19 | Hybrid | 8 | 2 | 71 | 771 | 726 | 439 | 91.09% | 36.28% | 63.30% | 63.69% | 75.15% |
+| 4 | VGG19 | Classical | — | — | 72 | 739 | 725 | 471 | 90.97% | 38.93% | 64.13% | 64.95% | 78.49% |
+| 5 | VGG16 | Hybrid | 12 | 2 | 86 | 650 | 711 | 560 | 89.21% | 46.28% | 65.89% | 67.75% | 77.30% |
+| 6 | ResNet50V2 | Hybrid | 16 | 2 | 89 | 589 | 708 | 621 | 88.83% | 51.32% | 67.62% | 70.08% | 77.79% |
+| 7 | VGG16 | Hybrid | 2 | 2 | 91 | 691 | 706 | 519 | 88.58% | 42.89% | 64.36% | 65.74% | 72.47% |
+| 8 | VGG16 | Hybrid | 6 | 2 | 93 | 708 | 704 | 502 | 88.33% | 41.49% | 63.74% | 64.91% | 76.24% |
+| 9 | VGG19 | Hybrid | 4 | 2 | 94 | 611 | 703 | 599 | 88.21% | 49.50% | 66.60% | 68.85% | 79.71% |
 
-### Some important points about the table:
-* In top 9 models we have 8 hybrids and just 1 classical CNN
-* ResNet50V2 with 2 qubits and depth 2 shows a roughly 35% decrease in number of false negatives vs VGG19 which had the best performance among classical CNNs
-* The above two points shows clearly that performance increases significantly by adding a quantum layer to our classical CNNs
-* I have provided the full tables with all the variants in TABLES.md, you find it in the main page of repository
+### Key observations
+
+- **Lowest FN, classical:** VGG19, with **72 FN** and **739 FP**.
+- **Lowest FN, hybrid:** ResNet50V2 with **2 qubits**, depth **2**, with **47 FN** and **747 FP**. This is **25 fewer FN (34.72% relative reduction)** than the best classical configuration, but **8 more FP**.
+- **Top nine:** **8 hybrid configurations and 1 classical CNN**, under the explicitly stated FN-based ranking. Multiple configurations of the same backbone count separately.
+- **Trade-off:** The selected hybrid's sensitivity increases from **90.97%** to **94.10%**, while specificity decreases from **38.93%** to **38.26%**. F1 improves from **64.13%** to **65.39%** and balanced accuracy from **64.95%** to **66.18%**. The false-positive burden remains substantial.
+- **Interpretation:** These are descriptive results for the reported dataset and selection procedure; they do **not** establish that quantum layers universally improve CNNs or demonstrate clinical readiness. The complete configuration-level results are available in [TABLES.md](TABLES.md).
 
 ## Key Contributions
 
